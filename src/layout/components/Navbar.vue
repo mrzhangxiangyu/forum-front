@@ -1,42 +1,41 @@
 <template>
   <div class="navbar">
-
-    <breadcrumb class="breadcrumb-container" />
-
-    <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
-        </div>
-        <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              Home
+    <div class="navMain">
+      <div class="left-menu">
+        <span>五六</span>
+        <div>首页</div>
+        <div>发现</div>
+        <div>等你来答</div>
+      </div>
+      <div class="right-menu">
+        <el-dropdown class="avatar-container" trigger="click">
+          <div class="avatar-wrapper">
+            <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+          </div>
+          <el-dropdown-menu slot="dropdown" class="user-dropdown">
+            <router-link to="/">
+              <el-dropdown-item>
+                我的主页
+              </el-dropdown-item>
+            </router-link>
+            <router-link to="/">
+              <el-dropdown-item>
+                设置
+              </el-dropdown-item>
+            </router-link>
+            <el-dropdown-item divided>
+              <span style="display:block;" @click="logout">退出</span>
             </el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">Log Out</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
     </div>
   </div>
 </template>
-
 <script>
 import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-
 export default {
   components: {
-    Breadcrumb
   },
   computed: {
     ...mapGetters([
@@ -59,33 +58,35 @@ export default {
   position: relative;
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
-
-  .hamburger-container {
-    line-height: 46px;
-    height: 100%;
-    float: left;
-    cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
-
-    &:hover {
-      background: rgba(0, 0, 0, .025)
+  .navMain{
+    width: 80%;
+    margin: 0 auto;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+  }
+  .left-menu{
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    width: 30%;
+    span{
+      font-size: 30px;
+      line-height: 50px;
+      color: #a0ddf5;
+    }
+    div{
+      height: 50px;
+      line-height: 50px;
+      border-bottom: 3px rgb(119, 213, 241) solid;
     }
   }
-
-  .breadcrumb-container {
-    float: left;
-  }
-
   .right-menu {
-    float: right;
     height: 100%;
     line-height: 50px;
-
     &:focus {
       outline: none;
     }
-
     .right-menu-item {
       display: inline-block;
       padding: 0 8px;
@@ -93,31 +94,25 @@ export default {
       font-size: 18px;
       color: #5a5e66;
       vertical-align: text-bottom;
-
       &.hover-effect {
         cursor: pointer;
         transition: background .3s;
-
         &:hover {
           background: rgba(0, 0, 0, .025)
         }
       }
     }
-
     .avatar-container {
       margin-right: 30px;
-
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
-
         .user-avatar {
           cursor: pointer;
           width: 40px;
           height: 40px;
           border-radius: 10px;
         }
-
         .el-icon-caret-bottom {
           cursor: pointer;
           position: absolute;
