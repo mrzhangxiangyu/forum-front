@@ -1,9 +1,11 @@
 <template>
-  <section class="app-main">
-    <transition name="fade-transform" mode="out-in">
-      <router-view :key="key" />
-    </transition>
-  </section>
+  <div class="layout-app-container">
+    <section class="app-main">
+      <transition name="fade-transform" mode="out-in">
+        <router-view :key="key" />
+      </transition>
+    </section>
+  </div>
 </template>
 
 <script>
@@ -17,15 +19,25 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.layout-app-container{
+  width: 100%;
+  height: calc(100vh - 50px);
+  overflow: scroll;
+  &::-webkit-scrollbar{
+    height: 2px;
+    width: 5px;
+  }
+  &::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+    border-radius: 5px;
+    background-color: #c1c1c2;
+  }
+}
 .app-main {
   /*50 = navbar  */
-  min-height: calc(100vh - 50px);
-  width: 80%;
+  width: 1000px;
   margin: 0 auto;
-}
-.fixed-header+.app-main {
-  padding-top: 50px;
+  // padding: 0 20%;
 }
 </style>
 

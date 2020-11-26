@@ -27,7 +27,10 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style lang="scss" scoped>
+#app{
+  overflow: hidden;
+}
 .Router {
   position: absolute;
   width: 100%;
@@ -45,5 +48,21 @@ export default {
   opacity: 0;
   -webkit-transform: translate(-100%, 0);
   transform: translate(-100%, 0);
+}
+</style>
+<style lang="scss">
+.article-content{
+  p{
+    margin: 0;
+    padding: 0;
+    color: #333;
+  }
+}
+// 解决element-ui table 表头错位
+body .el-table th.gutter{
+    display: table-cell!important;
+}
+body .el-table colgroup.gutter{
+    display: table-cell!important;
 }
 </style>

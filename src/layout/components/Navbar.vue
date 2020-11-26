@@ -2,30 +2,42 @@
   <div class="navbar">
     <div class="navMain">
       <div class="left-menu">
-        <span>五六</span>
-        <div>首页</div>
-        <div>发现</div>
-        <div>等你来答</div>
+        <img src="../../assets/imgs/title1.png" width="95px" height="50px;">
+        <div :class="navMenu === 1 ? 'bottom-border' : ''" @click="navClick(1)">
+          <svg-icon icon-class="home" />
+          首页
+        </div>
+        <div :class="navMenu === 2 ? 'bottom-border' : ''" @click="navClick(2)">
+          <svg-icon icon-class="hot" />
+          热点
+        </div>
+        <div :class="navMenu === 3 ? 'bottom-border' : ''" @click="navClick(3)">
+          <svg-icon icon-class="write" />
+          写文章
+        </div>
+        <div class="deep-input">
+          <el-input v-model="searchTxt" @keydown.enter.native="search">
+            <i slot="suffix" class="el-icon-search el-input__icon icon-search" @click="search" />
+          </el-input>
+        </div>
       </div>
       <div class="right-menu">
-        <el-dropdown class="avatar-container" trigger="click">
+        <el-dropdown class="avatar-container" :show-timeout="0">
           <div class="avatar-wrapper">
-            <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
+            <img v-if="$store.getters.avatar === null || $store.getters.avatar === ''" src="../../assets/imgs/default.jpg" class="user-avatar">
+            <img v-else :src="baseUrl + $store.getters.avatar" class="user-avatar">
           </div>
-          <el-dropdown-menu slot="dropdown" class="user-dropdown">
-            <router-link to="/">
+          <el-dropdown-menu slot="dropdown" style="margin-top: -10px">
+            <router-link to="/MyHome">
               <el-dropdown-item>
                 我的主页
               </el-dropdown-item>
             </router-link>
             <router-link to="/">
-              <el-dropdown-item>
-                设置
+              <el-dropdown-item divided>
+                <span style="display:block;" @click="logout">退出</span>
               </el-dropdown-item>
             </router-link>
-            <el-dropdown-item divided>
-              <span style="display:block;" @click="logout">退出</span>
-            </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
@@ -33,19 +45,66 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
 export default {
   components: {
   },
-  computed: {
-    ...mapGetters([
-      'avatar'
-    ])
+  data() {
+    return {
+      baseUrl: window.$api.imgUrl,
+      navMenu: 1,
+      searchTxt: ''
+    }
+  },
+  watch: {
+    '$route.path': function() {
+      this.resetNavMenu()
+      this.resetSearchTxt()
+    }
+  },
+  mounted() {
+    this.resetNavMenu()
   },
   methods: {
+    resetNavMenu() {
+      const name = this.$router.currentRoute.name
+      this.navMenu = name === 'Home' ? 1 : name === 'HotArticle' ? 2 : name === 'WriteArticle' ? 3 : 0
+    },
+    resetSearchTxt() {
+      const name = this.$router.currentRoute.name
+      this.searchTxt = name === 'Search' ? this.searchTxt : ''
+    },
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    navClick(e) {
+      switch (e) {
+        case 1: {
+          this.navMenu = 1
+          this.$router.push({ name: 'Home' })
+          break
+        }
+        case 2: {
+          this.navMenu = 2
+          this.$router.push({ name: 'HotArticle' })
+          break
+        }
+        case 3: {
+          this.navMenu = 3
+          this.$router.push({ name: 'WriteArticle' })
+          break
+        }
+        default: {
+          break
+        }
+      }
+    },
+    search() {
+      this.$router.push({
+        path: 'search',
+        query: { txt: this.searchTxt }
+      })
+      this.$store.dispatch('app/clickSearch', this.searchTxt)
     }
   }
 }
@@ -59,7 +118,7 @@ export default {
   background: #fff;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
   .navMain{
-    width: 80%;
+    width: 1000px;
     margin: 0 auto;
     display: flex;
     flex-flow: row nowrap;
@@ -69,7 +128,7 @@ export default {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
-    width: 30%;
+    width: 87.5%;
     span{
       font-size: 30px;
       line-height: 50px;
@@ -78,8 +137,17 @@ export default {
     div{
       height: 50px;
       line-height: 50px;
-      border-bottom: 3px rgb(119, 213, 241) solid;
+      cursor: default;
     }
+    .deep-input{
+      /deep/.el-input__inner{
+        height: 30px;
+        width: 400px;
+      }
+    }
+  }
+  .bottom-border{
+    border-bottom: 3px rgb(119, 213, 241) solid;
   }
   .right-menu {
     height: 100%;
@@ -103,7 +171,6 @@ export default {
       }
     }
     .avatar-container {
-      margin-right: 30px;
       .avatar-wrapper {
         margin-top: 5px;
         position: relative;
@@ -111,7 +178,7 @@ export default {
           cursor: pointer;
           width: 40px;
           height: 40px;
-          border-radius: 10px;
+          border-radius: 20px;
         }
         .el-icon-caret-bottom {
           cursor: pointer;
@@ -121,6 +188,11 @@ export default {
           font-size: 12px;
         }
       }
+    }
+  }
+  .icon-search{
+    &:hover{
+      color:#409eff;
     }
   }
 }

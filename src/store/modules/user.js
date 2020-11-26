@@ -1,19 +1,19 @@
-import { login, logout, getInfo } from '@/api/user'
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import { resetRouter } from '@/router'
-
+import axios from 'axios'
+import { setUserLogin, setUserId, getUserId } from '@/utils/auth'
+axios.defaults.baseURL = window.$api.baseURL // 换域名是在static/config.js的给换一下
+axios.defaults.headers.post['Content-Type'] = 'application/json'
 const state = {
-  token: getToken(),
-  name: '',
+  nickname: '',
+  userId: null,
   avatar: ''
 }
 
 const mutations = {
-  SET_TOKEN: (state, token) => {
-    state.token = token
+  SET_NICKNAME: (state, nickname) => {
+    state.nickname = nickname
   },
-  SET_NAME: (state, name) => {
-    state.name = name
+  SET_USERID: (state, userId) => {
+    state.userId = userId
   },
   SET_AVATAR: (state, avatar) => {
     state.avatar = avatar
@@ -21,62 +21,38 @@ const mutations = {
 }
 
 const actions = {
-  // user login
-  login({ commit }, userInfo) {
-    const { username, password } = userInfo
-    return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
-        const { data } = response
-        commit('SET_TOKEN', data.token)
-        setToken(data.token)
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
+  saveUser({ commit }, info) {
+    setUserLogin(1)
+    setUserId(info.userId)
+    commit('SET_NICKNAME', info.nickname)
+    commit('SET_USERID', info.userId)
+    commit('SET_AVATAR', info.avatar)
   },
-
-  // get user info
-  getInfo({ commit, state }) {
+  logout({ commit }) {
+    setUserLogin(0)
+    setUserId('')
+    commit('SET_NICKNAME', '')
+    commit('SET_USERID', '')
+    commit('SET_AVATAR', '')
+  },
+  getInfo({ commit }) {
     return new Promise((resolve, reject) => {
-      getInfo(state.token).then(response => {
-        const { data } = response
-
-        if (!data) {
-          reject('Verification failed, please Login again.')
+      axios({
+        url: 'user',
+        method: 'get',
+        params: {
+          userId: getUserId()
         }
-
-        const { name, avatar } = data
-
-        commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        resolve(data)
-      }).catch(error => {
-        reject(error)
+      }).then(ret => {
+        if (ret.data.meta.status) {
+          commit('SET_NICKNAME', ret.data.data.nickname)
+          commit('SET_USERID', ret.data.data.userId)
+          commit('SET_AVATAR', ret.data.data.avatar)
+          resolve(true)
+        } else {
+          resolve(false)
+        }
       })
-    })
-  },
-
-  // user logout
-  logout({ commit, state }) {
-    return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
-        commit('SET_TOKEN', '')
-        removeToken()
-        resetRouter()
-        resolve()
-      }).catch(error => {
-        reject(error)
-      })
-    })
-  },
-
-  // remove token
-  resetToken({ commit }) {
-    return new Promise(resolve => {
-      commit('SET_TOKEN', '')
-      removeToken()
-      resolve()
     })
   }
 }

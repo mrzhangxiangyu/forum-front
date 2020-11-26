@@ -42,16 +42,36 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
+  {
+    path: '/admin',
+    component: () => import('@/views/admin/index'),
+    hidden: true
+  },
 
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/home',
     children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      path: 'home',
+      name: 'Home',
+      component: () => import('@/views/home/index')
+    }, {
+      path: 'hotArticle',
+      name: 'HotArticle',
+      component: () => import('@/views/home/hot')
+    }, {
+      path: 'writeArticle',
+      name: 'WriteArticle',
+      component: () => import('@/views/home/write')
+    }, {
+      path: 'myHome',
+      name: 'MyHome',
+      component: () => import('@/views/myHome/myHome')
+    }, {
+      path: 'search',
+      name: 'Search',
+      component: () => import('@/views/search/search')
     }]
   },
 
