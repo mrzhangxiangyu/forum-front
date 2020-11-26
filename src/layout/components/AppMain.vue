@@ -22,6 +22,9 @@ export default {
 <style lang="scss" scoped>
 .layout-app-container{
   width: 100%;
+  @media screen and(max-width: 996px){
+    width: 100%;
+  }
   height: calc(100vh - 50px);
   overflow: scroll;
   &::-webkit-scrollbar{
@@ -36,6 +39,10 @@ export default {
 .app-main {
   /*50 = navbar  */
   width: 1000px;
+  @media screen and(max-width: 996px){
+    width: 100%;
+    padding-bottom: 8vh;
+  }
   margin: 0 auto;
   // padding: 0 20%;
 }

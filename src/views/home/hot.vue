@@ -7,25 +7,31 @@
       <div v-for="(article, index) in articleList" :key="'article' + index" :class="index === 0 ? 'article' : 'article border-top'">
         <div class="title"> {{ article.title }} </div>
         <div class="content">
-          <img v-if="article.imgUrl !== ''" :src="imgUrl + article.imgUrl">
+          <img v-if="article.imgUrl !== '' && $store.state.app.device === 'desktop'" :src="imgUrl + article.imgUrl">
+          <div v-if="article.imgUrl !== '' && $store.state.app.device !== 'desktop'" class="content-img">
+            <img :src="imgUrl + article.imgUrl">
+          </div>
           <div class="article-content" v-html="article.content" />
+        </div>
+        <div v-if="$store.state.app.device !== 'desktop'" style="color: #ccc">
+          <span>{{ article.time }}</span>
         </div>
         <div class="footer flex-between">
           <div class="flex-start">
-            <div class="flex-between">
+            <div class="flex-between items-center">
               <svg-icon icon-class="like" :style="article.liked ? 'color: #cc5f60' : 'color: #ccc'" @click="clickLike(article)" />
               <div class="text">{{ article.likeNum }}</div>
             </div>
-            <div style="margin-left:20px" class="flex-between">
+            <div style="margin-left:20px" class="flex-between items-center">
               <svg-icon icon-class="favorite" :style="article.favorited ? 'color: #cc5f60' : 'color: #ccc'" @click="clickFavorite(article)" />
               <div class="text">{{ article.favoriteNum }}</div>
             </div>
-            <div style="margin-left:20px" class="flex-between" @click="clickComment(article, index)">
+            <div style="margin-left:20px" class="flex-between items-center" @click="clickComment(article, index)">
               <svg-icon icon-class="comment" style="color: #ccc" />
               <div class="text">{{ article.openComment ? '收起评论' : (article.commentNum + '条评论') }}</div>
             </div>
           </div>
-          <div style="color: #ccc">
+          <div v-if="$store.state.app.device === 'desktop'" style="color: #ccc">
             <span>{{ article.time }}</span>
           </div>
         </div>
@@ -205,21 +211,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.flex-between{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-}
-.flex-start{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-start;
-}
-.flex-end{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-end;
-}
+@import '@/styles/article.scss';
 .dashboard {
   &-container {
     margin: 10px 0;
@@ -229,113 +221,7 @@ export default {
     padding: 10px;
   }
 }
-.deep-tabs{
-  display: block;
-  width: 100%;
-  padding: 0 20px;
-}
 .border-top{
   border-top: 1px rgb(240, 240, 240) solid;
-}
-.article{
-  padding: 20px;
-  .title{
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .content{
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: space-between;
-    img{
-      width: 150px;
-      height: 100px;
-      display: block;
-      border-radius: 5px;
-    }
-    .article-content{
-      display: block;
-      width: calc(100% - 160px);
-      white-space: normal;
-      word-break: break-all;
-    }
-  }
-  .footer{
-    margin-top: 10px;
-    height: 30px;
-    line-height: 30px;
-    cursor: default;
-    .svg-icon{
-      font-size: 20px;
-      margin-top: 5px;
-    }
-    .text{
-      color: #ccc;
-      margin-left: 10px;
-      user-select: none;
-    }
-  }
-  .comment{
-    width: 100%;
-    transition-duration: .4s;
-    border-radius: 3px;
-    .header{
-      height: auto;
-      width: 100%;
-      line-height: 40px;
-      .user-avatar{
-        width: 30px;
-        height: 30px;
-        border-radius: 15px;
-        margin-top: 8px;
-      }
-      .deep-textarea{
-        width: calc(100% - 40px);
-        /deep/input{
-          width: 100%;
-        }
-      }
-    }
-    &-button{
-      padding: 5px 0px;
-    }
-    .comments{
-      width: 100%;
-      padding: 5px 10px;
-      border-top: 1px rgb(240,240,240) solid;
-      &-item{
-        padding: 5px 0;
-        width: 100%;
-      }
-      &-avatar{
-        width: 30px;
-        height: 30px;
-        border-radius: 15px;
-      }
-      .item-right{
-        width: calc(100% - 30px);
-      }
-      .break{
-        white-space: normal;
-        word-break: break-all;
-      }
-      .nickname{
-        padding-left: 5px;
-        color: rgb(95, 95, 95);
-        font-size: 14px;
-      }
-      .content{
-        padding-left: 5px;
-        color: rgb(146, 146, 146);
-        font-size: 15px;
-      }
-      .time{
-        padding-left: 3px;
-        color: #ccc;
-        font-size: 12px;
-      }
-    }
-  }
 }
 </style>

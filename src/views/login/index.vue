@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div id="myBg" class="backgroung">
-      <canvas id="canvas" ref="myBg" />
+      <!-- <canvas id="canvas" ref="myBg" /> -->
     </div>
     <div class="login">
       <div class="line" />
@@ -83,9 +83,9 @@ export default {
     }
   },
   mounted() {
-    const that = this
-    that.$refs.myBg.width = document.body.clientWidth
-    that.$refs.myBg.height = document.body.clientHeight
+    // const that = this
+    // that.$refs.myBg.width = document.body.clientWidth
+    // that.$refs.myBg.height = document.body.clientHeight
     // window.onresize = () => {
     //   that.$refs.myBg.width = document.body.clientWidth
     //   that.$refs.myBg.height = document.body.clientHeight
@@ -192,7 +192,7 @@ canvas {
 }
 .backgroung{
   position: absolute;
-  // background-color: #D6F8FF;
+  background-color: #D6F8FF;
   width: 100%;
   height: 100%;
   z-index: -1;
@@ -208,6 +208,9 @@ canvas {
 .login {
   position: relative;
   width: 400px;
+  @media screen and (max-width: 996px) {
+    width: 80vw;
+  }
   margin: 0 auto;
   top: 0vh;
   .line{
@@ -231,6 +234,7 @@ canvas {
       overflow: hidden;
       padding-bottom: 0px;
       &-div{
+        width: 100%;
         position: absolute;
         bottom: 30px;
         padding-bottom: 0px;
@@ -243,7 +247,7 @@ canvas {
       align-items:center;
       padding-bottom: 30px;
       /deep/.el-input{
-        width: 350px;
+        width: 90%;
         height: 40px;
         padding-left: 20px;
         padding-bottom: 0;
@@ -253,7 +257,7 @@ canvas {
         }
       }
       /deep/.el-button{
-        width: 170px;
+        width: calc(45% - 6px);
         margin-top:10px;
       }
       /deep/.el-input__prefix{

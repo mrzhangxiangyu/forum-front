@@ -51,6 +51,24 @@ export default {
 }
 </style>
 <style lang="scss">
+.flex-between{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
+.flex-start{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+}
+.flex-end{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+}
+.items-center{
+  align-items: center;
+}
 .article-content{
   p{
     margin: 0;

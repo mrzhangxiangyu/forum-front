@@ -6,7 +6,7 @@
         <i class="el-icon-camera-solid" />
         <div><p>添加图片</p></div>
       </div>
-      <img v-if="imgUrl !== ''" :src="imgUrl" width="100%">
+      <img v-if="imgUrl !== ''" :src="imgUrl" width="100%" height="100%">
     </div>
     <span class="deepInput"><el-input v-model="title" placeholder="请输入标题" /></span>
     <span class="deepSelect">
@@ -40,7 +40,7 @@ export default {
   mounted() {
     this.getTypes()
     // 编辑菜单配置
-    this.editor1.customConfig.menus = [
+    this.editor1.customConfig.menus = this.$store.state.app.device === 'desktop' ? [
       'head', // 标题
       'bold', // 粗体
       'fontSize', // 字号
@@ -61,6 +61,14 @@ export default {
       // 'code', // 插入代码
       'undo', // 撤销
       'redo' // 重复
+    ] : [
+      'head', // 标题
+      'bold', // 粗体
+      'fontSize', // 字号
+      'underline', // 下划线
+      'strikeThrough', // 删除线
+      'undo', // 撤销
+      'redo' // 重复
     ]
     // this.editor1.customConfig.onchange = (html) => {
     //   // html 即变化之后的内容
@@ -68,6 +76,7 @@ export default {
     // }
     this.editor1.customConfig.zIndex = 1
     this.editor1.create()
+    this.editor1.txt.html('<p>请输入内容</p>')
   },
   methods: {
     getTypes() {
@@ -81,8 +90,19 @@ export default {
       })
     },
     publish() {
-      const content = this.editor1.txt.html()
+      let content = this.editor1.txt.html()
       console.log(content)
+      let judge = true
+      let num = 0
+      while (judge && num < 10) {
+        if (content.endsWith('<p><br></p>')) {
+          content = content.slice(0, -11)
+          console.log(content)
+          num++
+        } else {
+          judge = false
+        }
+      }
       if (this.title === '') {
         this.$message.warning('请填写标题')
         return
@@ -143,7 +163,6 @@ export default {
 <style lang="scss" scoped>
 .main{
   width: 90%;
-  min-width: 600px;
   max-width: 800px;
   margin: 0 auto;
   padding-bottom: 30px;
@@ -152,18 +171,25 @@ export default {
 .upload-img{
   position: relative;
   width: 100%;
-  min-height:200px;
   border: 1px #ccc solid;
   border-radius: 5px;
   z-index: 1;
   background-color: rgba(221, 221, 221, 0.3);
   margin-bottom: 5px;
-  img{
+  &::before{
+    content: '';
     display: block;
+    padding-top: 50%;
+  }
+  img{
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
   }
   .shade{
     position: absolute;
-    z-index: 2;
+    z-index: 3;
     bottom: 0;
     width: 100%;
     height: 100%;
@@ -177,6 +203,8 @@ export default {
     i{
       font-size: 40px;
       color: rgb(185, 185, 185);
+      transform: translateX(32px);
+      transition-duration: .4s;
     }
     div{
       overflow: hidden;
@@ -186,6 +214,9 @@ export default {
       transition-duration: .4s;
     }
     &:hover{
+      i{
+        transform: translateX(0px);
+      }
       p{
         transform: translateX(0px);
       }

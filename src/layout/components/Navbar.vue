@@ -2,7 +2,7 @@
   <div class="navbar">
     <div class="navMain">
       <div class="left-menu">
-        <img src="../../assets/imgs/title1.png" width="95px" height="50px;">
+        <img v-if="$store.state.app.device === 'desktop'" src="../../assets/imgs/title1.png" width="95px" height="50px;">
         <div :class="navMenu === 1 ? 'bottom-border' : ''" @click="navClick(1)">
           <svg-icon icon-class="home" />
           首页
@@ -15,14 +15,29 @@
           <svg-icon icon-class="write" />
           写文章
         </div>
-        <div class="deep-input">
+        <div v-if="$store.state.app.device === 'desktop'" class="deep-input">
           <el-input v-model="searchTxt" @keydown.enter.native="search">
             <i slot="suffix" class="el-icon-search el-input__icon icon-search" @click="search" />
           </el-input>
         </div>
+        <div v-else>
+          <el-popover
+            v-model="searchVisible"
+            placement="bottom-start"
+            width="100%"
+            trigger="click"
+            popper-class="deep-popover"
+          >
+            <i slot="reference" class="el-icon-search" />
+            <div class="flex-between">
+              <el-input ref="searchInput" v-model="searchTxt" @keydown.enter.native="search" />
+              <el-button size="mini" @click="search(1)">搜索</el-button>
+            </div>
+          </el-popover>
+        </div>
       </div>
       <div class="right-menu">
-        <el-dropdown class="avatar-container" :show-timeout="0">
+        <el-dropdown ref="meau" class="avatar-container" :show-timeout="0" @command="clickMeau">
           <div class="avatar-wrapper">
             <img v-if="$store.getters.avatar === null || $store.getters.avatar === ''" src="../../assets/imgs/default.jpg" class="user-avatar">
             <img v-else :src="baseUrl + $store.getters.avatar" class="user-avatar">
@@ -50,6 +65,7 @@ export default {
   },
   data() {
     return {
+      searchVisible: false,
       baseUrl: window.$api.imgUrl,
       navMenu: 1,
       searchTxt: ''
@@ -59,12 +75,22 @@ export default {
     '$route.path': function() {
       this.resetNavMenu()
       this.resetSearchTxt()
+    },
+    'searchVisible': function() {
+      if (this.searchVisible) {
+        setTimeout(() => {
+          this.$refs.searchInput.focus()
+        }, 100)
+      }
     }
   },
   mounted() {
     this.resetNavMenu()
   },
   methods: {
+    clickMeau(e) {
+      this.$refs.meau.hide()
+    },
     resetNavMenu() {
       const name = this.$router.currentRoute.name
       this.navMenu = name === 'Home' ? 1 : name === 'HotArticle' ? 2 : name === 'WriteArticle' ? 3 : 0
@@ -99,7 +125,10 @@ export default {
         }
       }
     },
-    search() {
+    search(e) {
+      if (e === 1) {
+        this.searchVisible = false
+      }
       this.$router.push({
         path: 'search',
         query: { txt: this.searchTxt }
@@ -111,6 +140,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.flex-between{
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+}
 .navbar {
   height: 50px;
   overflow: hidden;
@@ -119,6 +153,10 @@ export default {
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
   .navMain{
     width: 1000px;
+    @media screen and(max-width: 996px){
+      width: 100%;
+      padding: 0 10px;
+    }
     margin: 0 auto;
     display: flex;
     flex-flow: row nowrap;
@@ -129,10 +167,8 @@ export default {
     flex-flow: row nowrap;
     justify-content: space-between;
     width: 87.5%;
-    span{
-      font-size: 30px;
-      line-height: 50px;
-      color: #a0ddf5;
+    @media screen and(max-width: 996px){
+      width: 80%;
     }
     div{
       height: 50px;
@@ -195,5 +231,11 @@ export default {
       color:#409eff;
     }
   }
+}
+</style>
+<style lang="scss">
+.el-popper.deep-popover{
+  top: 38px!important;
+  width: 100%;
 }
 </style>

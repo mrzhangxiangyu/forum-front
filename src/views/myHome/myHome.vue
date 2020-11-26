@@ -4,14 +4,15 @@
       <div class="header-bg" />
       <div class="header-content">
         <div class="header-content-avatar">
-          <img v-if="userInfo.avatar === null || userInfo.avatar === '' || userInfo.avatar === undefined" src="../../assets/imgs/default.jpg" height="160px" width="160px">
-          <img v-else :src="baseUrl + userInfo.avatar" height="160px" width="160px">
+          <img v-if="userInfo.avatar === null || userInfo.avatar === '' || userInfo.avatar === undefined" src="../../assets/imgs/default.jpg">
+          <img v-else :src="baseUrl + userInfo.avatar">
           <div class="hover" @click="uploadImg">
             <i class="el-icon-camera-solid" />
           </div>
           <input ref="img" type="file" accept=".jpg,.jpeg,.png" style="position:absolute; top:-10000px" @change="chooseImg">
         </div>
-        <div style="width: 230px; height: 100px" />
+        <div v-if="$store.state.app.device === 'desktop'" style="width: 230px; height: 100px" />
+        <div v-else style="width: 140px; height: 100px" />
         <div class="header-content-right">
           <div class="nickname">
             <span> {{ userInfo.nickname }} </span>
@@ -97,9 +98,9 @@
               {{ isOpen ? '收起' : '查看' }}详细资料
             </span>
             <span class="button">
-              <el-button v-if="!isEdit" plain size="small" @click="isEdit = isOpen = true">编辑资料</el-button>
-              <el-button v-if="isEdit" plain size="small" @click="updateUserInfo">提交</el-button>
-              <el-button v-if="isEdit" plain size="small" @click="cancelUpdate">取消</el-button>
+              <el-button v-if="!isEdit" plain :size="$store.state.app.device === 'desktop' ? 'small' : 'mini'" @click="isEdit = isOpen = true">编辑资料</el-button>
+              <el-button v-if="isEdit" plain :size="$store.state.app.device === 'desktop' ? 'small' : 'mini'" @click="updateUserInfo">提交</el-button>
+              <el-button v-if="isEdit" plain :size="$store.state.app.device === 'desktop' ? 'small' : 'mini'" @click="cancelUpdate">取消</el-button>
             </span>
           </div>
         </div>
@@ -115,25 +116,31 @@
                 <el-button type="danger" size="mini" icon="el-icon-delete" plain circle style="float:right" @click="deleteArticle(1, article)" />
               </div>
               <div class="content">
-                <img v-if="article.imgUrl !== ''" :src="baseUrl + article.imgUrl">
+                <img v-if="article.imgUrl !== '' && $store.state.app.device === 'desktop'" :src="baseUrl + article.imgUrl">
+                <div v-if="article.imgUrl !== '' && $store.state.app.device !== 'desktop'" class="content-img">
+                  <img :src="baseUrl + article.imgUrl">
+                </div>
                 <div class="article-content" v-html="article.content" />
+              </div>
+              <div v-if="$store.state.app.device !== 'desktop'" style="color: #ccc">
+                <span>{{ article.time }}</span>
               </div>
               <div class="footer flex-between">
                 <div class="flex-start">
-                  <div class="flex-between">
+                  <div class="flex-between items-center">
                     <svg-icon icon-class="like" :style="article.liked ? 'color: #cc5f60' : 'color: #ccc'" @click="clickLike(article)" />
                     <div class="text">{{ article.likeNum }}</div>
                   </div>
-                  <div style="margin-left:20px" class="flex-between">
+                  <div style="margin-left:20px" class="flex-between items-center">
                     <svg-icon icon-class="favorite" :style="article.favorited ? 'color: #cc5f60' : 'color: #ccc'" @click="clickFavorite(article)" />
                     <div class="text">{{ article.favoriteNum }}</div>
                   </div>
-                  <div style="margin-left:20px" class="flex-between" @click="clickComment(article, index)">
+                  <div style="margin-left:20px" class="flex-between items-center" @click="clickComment(article, index)">
                     <svg-icon icon-class="comment" style="color: #ccc" />
                     <div class="text">{{ article.openComment ? '收起评论' : (article.commentNum + '条评论') }}</div>
                   </div>
                 </div>
-                <div style="color: #ccc">
+                <div v-if="$store.state.app.device === 'desktop'" style="color: #ccc">
                   <span>{{ article.time }}</span>
                 </div>
               </div>
@@ -191,28 +198,34 @@
                 {{ comment.article.title }}
               </div>
               <div v-if="comment.article.status === 1" class="content">
-                <img v-if="comment.article.imgUrl !== ''" :src="baseUrl + comment.article.imgUrl">
+                <img v-if="comment.article.imgUrl !== '' && $store.state.app.device === 'desktop'" :src="baseUrl + comment.article.imgUrl">
+                <div v-if="comment.article.imgUrl !== '' && $store.state.app.device !== 'desktop'" class="content-img">
+                  <img :src="baseUrl + comment.article.imgUrl">
+                </div>
                 <div class="article-content" v-html="comment.article.content" />
               </div>
               <div v-else class="delete">
                 作者已删除
               </div>
+              <div v-if="$store.state.app.device !== 'desktop'" style="color: #ccc">
+                <span>{{ comment.article.time }}</span>
+              </div>
               <div class="footer flex-between">
                 <div class="flex-start">
-                  <div class="flex-between">
+                  <div class="flex-between items-center">
                     <svg-icon icon-class="like" :style="comment.article.liked ? 'color: #cc5f60' : 'color: #ccc'" @click="clickLike(comment.article)" />
                     <div class="text">{{ comment.article.likeNum }}</div>
                   </div>
-                  <div style="margin-left:20px" class="flex-between">
+                  <div style="margin-left:20px" class="flex-between items-center">
                     <svg-icon icon-class="favorite" :style="comment.article.favorited ? 'color: #cc5f60' : 'color: #ccc'" @click="clickFavorite(comment.article)" />
                     <div class="text">{{ comment.article.favoriteNum }}</div>
                   </div>
-                  <div style="margin-left:20px" class="flex-between" @click="clickComment(comment.article, index)">
+                  <div style="margin-left:20px" class="flex-between items-center" @click="clickComment(comment.article, index)">
                     <svg-icon icon-class="comment" style="color: #ccc" />
                     <div class="text">{{ comment.article.openComment ? '收起评论' : (comment.article.commentNum + '条评论') }}</div>
                   </div>
                 </div>
-                <div style="color: #ccc">
+                <div v-if="$store.state.app.device === 'desktop'" style="color: #ccc">
                   <span>{{ comment.article.time }}</span>
                 </div>
               </div>
@@ -259,28 +272,34 @@
             <div v-for="(article, index) in favoriteList" :key="'favorite' + index" :class="index === 0 ? 'article' : 'article border-top'">
               <div class="title"> {{ article.title }} </div>
               <div v-if="article.status === 1" class="content">
-                <img v-if="article.imgUrl !== ''" :src="baseUrl + article.imgUrl">
+                <img v-if="article.imgUrl !== '' && $store.state.app.device === 'desktop'" :src="baseUrl + article.imgUrl">
+                <div v-if="article.imgUrl !== '' && $store.state.app.device !== 'desktop'" class="content-img">
+                  <img :src="baseUrl + article.imgUrl">
+                </div>
                 <div class="article-content" v-html="article.content" />
               </div>
               <div v-else class="delete">
                 作者已删除
               </div>
+              <div v-if="$store.state.app.device !== 'desktop'" style="color: #ccc">
+                <span>{{ article.time }}</span>
+              </div>
               <div class="footer flex-between">
                 <div class="flex-start">
-                  <div class="flex-between">
+                  <div class="flex-between items-center">
                     <svg-icon icon-class="like" :style="article.liked ? 'color: #cc5f60' : 'color: #ccc'" @click="clickLike(article)" />
                     <div class="text">{{ article.likeNum }}</div>
                   </div>
-                  <div style="margin-left:20px" class="flex-between">
+                  <div style="margin-left:20px" class="flex-between items-center">
                     <svg-icon icon-class="favorite" :style="article.favorited ? 'color: #cc5f60' : 'color: #ccc'" @click="clickFavorite(article)" />
                     <div class="text">{{ article.favoriteNum }}</div>
                   </div>
-                  <div style="margin-left:20px" class="flex-between" @click="clickComment(article, index)">
+                  <div style="margin-left:20px" class="flex-between items-center" @click="clickComment(article, index)">
                     <svg-icon icon-class="comment" style="color: #ccc" />
                     <div class="text">{{ article.openComment ? '收起评论' : (article.commentNum + '条评论') }}</div>
                   </div>
                 </div>
-                <div style="color: #ccc">
+                <div v-if="$store.state.app.device === 'desktop'" style="color: #ccc">
                   <span>{{ article.time }}</span>
                 </div>
               </div>
@@ -716,21 +735,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.flex-between{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-}
-.flex-start{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-start;
-}
-.flex-end{
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: flex-end;
-}
+@import '@/styles/article.scss';
 .container{
   margin-top: 10px;
   width: 100%;
@@ -759,11 +764,22 @@ export default {
       width: 168px;
       left: 20px;
       top: -74px;
+      @media screen and(max-width: 996px){
+        height: 108px;
+        width: 108px;
+        top: -54px;
+      }
       border: 4px #fff solid;
       background-color: #ccc;
       border-radius: 8px;
       img{
         border-radius: 4px;
+        height: 160px;
+        width: 160px;
+        @media screen and(max-width: 996px){
+          height: 100px;
+          width: 100px;
+        }
       }
       &:hover{
         .hover{
@@ -789,12 +805,18 @@ export default {
     }
     &-right{
       width: 770px;
+      @media screen and(max-width: 996px){
+        width: calc(100% - 150px);
+      }
       .nickname{
         width: 100%;
         height: 60px;
         padding-top: 10px;
         text-overflow: ellipsis;
         white-space: nowrap;
+        @media screen and(max-width: 996px){
+          white-space: normal;
+        }
         span:nth-child(1){
           font-size: 26px;
           font-weight: 600;
@@ -803,10 +825,23 @@ export default {
           margin-left: 12px;
           font-size: 18px;
         }
+        @media screen and(max-width: 996px){
+          width: 100%;
+          height: auto;
+          span{
+            display: block;
+            margin-left: 0!important;
+          }
+        }
       }
       .info{
         width: 100%;
         padding-left: 20px;
+        @media screen and(max-width: 996px){
+          position: relative;
+          width: calc(100% + 130px);
+          left: -130px;
+        }
         .list{
           display: flex;
           flex-flow: row nowrap;
@@ -827,6 +862,9 @@ export default {
           }
           .input{
             padding-left: 10px;
+            @media screen and(max-width: 996px){
+              width: calc(100% - 50px);
+            }
             /deep/.el-input__inner{
               border: none;
               height: 30px;
@@ -834,13 +872,24 @@ export default {
               padding-left: 30px;
               border-bottom: 1px rgb(238, 238, 238) solid;
               border-radius: 0;
+              @media screen and(max-width: 996px){
+                width: 100%;
+                padding-left: 5px;
+              }
             }
             .date-picker{
               /deep/.el-input__inner{
                 padding-left: 50px;
+                @media screen and(max-width: 996px){
+                  padding-left: 30px;
+                  width: 100%;
+                }
               }
               /deep/.el-input__prefix{
                 padding-left: 20px;
+                @media screen and(max-width: 996px){
+                  padding-left: 0;
+                }
               }
             }
           }
@@ -852,6 +901,11 @@ export default {
         line-height: 45px;
         color: #ccc;
         width: 100%;
+        @media screen and(max-width: 996px){
+          width: calc(100% + 130px);
+          left: -130px;
+          padding-left: 20px;
+        }
         cursor: default;
         .button{
           position: absolute;
@@ -887,107 +941,6 @@ export default {
     line-height: 100px;
     color: rgb(182, 54, 54);
     font-size: 30px;
-  }
-  .article{
-    padding: 20px;
-    .title{
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-    .content{
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: space-between;
-      img{
-        width: 150px;
-        height: 100px;
-        display: block;
-        border-radius: 5px;
-      }
-      .article-content{
-        display: block;
-        width: calc(100% - 160px);
-        white-space: normal;
-        word-break: break-all;
-      }
-    }
-    .footer{
-      margin-top: 10px;
-      height: 30px;
-      line-height: 30px;
-      cursor: default;
-      .svg-icon{
-        font-size: 20px;
-        margin-top: 5px;
-      }
-      .text{
-        color: #ccc;
-        margin-left: 10px;
-        user-select: none;
-      }
-    }
-    .comment{
-      width: 100%;
-      transition-duration: .4s;
-      border-radius: 3px;
-      .header{
-        height: auto;
-        width: 100%;
-        line-height: 40px;
-        .user-avatar{
-          width: 30px;
-          height: 30px;
-          border-radius: 15px;
-          margin-top: 8px;
-        }
-        .deep-textarea{
-          width: calc(100% - 40px);
-          /deep/input{
-            width: 100%;
-          }
-        }
-      }
-      &-button{
-        padding: 5px 0px;
-      }
-      .comments{
-        width: 100%;
-        padding: 5px 10px;
-        border-top: 1px rgb(240,240,240) solid;
-        &-item{
-          padding: 5px 0;
-          width: 100%;
-        }
-        &-avatar{
-          width: 30px;
-          height: 30px;
-          border-radius: 15px;
-        }
-        .item-right{
-          width: calc(100% - 30px);
-        }
-        .break{
-          white-space: normal;
-          word-break: break-all;
-        }
-        .nickname{
-          padding-left: 5px;
-          color: rgb(95, 95, 95);
-          font-size: 14px;
-        }
-        .content{
-          padding-left: 5px;
-          color: rgb(146, 146, 146);
-          font-size: 15px;
-        }
-        .time{
-          padding-left: 3px;
-          color: #ccc;
-          font-size: 12px;
-        }
-      }
-    }
   }
 }
 </style>
